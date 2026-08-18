@@ -312,6 +312,17 @@ function row(k, v){
   return `<div class="row"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></div>`;
 }
 
+// 貨態查詢資訊若是網址，顯示為可點擊連結；否則以純文字呈現
+function rowTracking(k, v){
+  if(!v) return '';
+  const trimmed = v.trim();
+  const isUrl = /^https?:\/\//i.test(trimmed);
+  const valHtml = isUrl
+    ? `<a href="${esc(trimmed)}" target="_blank" rel="noopener">查看貨態 ↗</a>`
+    : esc(trimmed);
+  return `<div class="row"><span class="k">${esc(k)}</span><span class="v">${valHtml}</span></div>`;
+}
+
 function renderOnsite(item){
   const isProxy = item.method && item.method.includes('代領');
   const methodDisplay = (item.method === '本人領取' || isProxy) ? item.method : ('本人領取（' + item.method + '）');
@@ -351,6 +362,8 @@ function renderMailOrder(item, kind){
   html += row('收件真實姓名', item.recipient); // 已在後端遮蔽
   html += row('連絡電話', item.phone);
   html += row('購買套組數量', item.qty);
+  html += row('備註', item.note);
+  html += rowTracking('貨態查詢資訊', item.tracking);
   html += `</div></div>`;
   return html;
 }
